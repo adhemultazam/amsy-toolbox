@@ -24,30 +24,56 @@ const Mp3Cutter = () => {
   const [sampleRate, setSampleRate] = useState("44100");
   const [processing, setProcessing] = useState(false);
   const [isDragging, setIsDragging] = useState<null | 'start' | 'end' | 'current'>(null);
+  const [audioBuffer, setAudioBuffer] = useState<AudioBuffer | null>(null);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   useEffect(() => {
     if (file && audioRef.current) {
       const audio = audioRef.current;
-      audio.src = URL.createObjectURL(file);
+      const url = URL.createObjectURL(file);
+      audio.src = url;
       
       audio.addEventListener('loadedmetadata', () => {
         setDuration(audio.duration);
         setEndTime(audio.duration);
+        loadAudioBuffer(file);
         drawWaveform();
       });
 
       audio.addEventListener('timeupdate', () => {
         setCurrentTime(audio.currentTime);
       });
+
+      audio.addEventListener('ended', () => {
+        setIsPlaying(false);
+      });
+
+      return () => {
+        URL.revokeObjectURL(url);
+      };
     }
   }, [file]);
 
+  const loadAudioBuffer = async (audioFile: File) => {
+    try {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new AudioContext();
+      }
+      
+      const arrayBuffer = await audioFile.arrayBuffer();
+      const buffer = await audioContextRef.current.decodeAudioData(arrayBuffer);
+      setAudioBuffer(buffer);
+    } catch (error) {
+      console.error('Error loading audio buffer:', error);
+    }
+  };
+
   const drawWaveform = () => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || !audioBuffer) return;
     
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
@@ -56,60 +82,100 @@ const Mp3Cutter = () => {
     canvas.width = canvas.offsetWidth;
     canvas.height = 100;
 
-    // Simple waveform visualization
-    ctx.fillStyle = '#e5e7eb';
+    // Clear canvas
+    ctx.fillStyle = '#f3f4f6';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw waveform bars
-    const barWidth = 2;
-    const barSpacing = 1;
-    const numBars = Math.floor(canvas.width / (barWidth + barSpacing));
-
-    for (let i = 0; i < numBars; i++) {
-      const height = Math.random() * canvas.height * 0.8;
-      const x = i * (barWidth + barSpacing);
+    // Draw waveform from audio buffer
+    const channelData = audioBuffer.getChannelData(0);
+    const samplesPerPixel = Math.floor(channelData.length / canvas.width);
+    
+    ctx.fillStyle = '#10b981';
+    for (let x = 0; x < canvas.width; x++) {
+      let sum = 0;
+      for (let i = 0; i < samplesPerPixel; i++) {
+        const index = x * samplesPerPixel + i;
+        if (index < channelData.length) {
+          sum += Math.abs(channelData[index]);
+        }
+      }
+      const amplitude = sum / samplesPerPixel;
+      const height = amplitude * canvas.height * 0.8;
       const y = (canvas.height - height) / 2;
-
-      ctx.fillStyle = '#10b981';
-      ctx.fillRect(x, y, barWidth, height);
+      
+      ctx.fillRect(x, y, 1, height);
     }
 
     // Draw selection area
     const startX = (startTime / duration) * canvas.width;
     const endX = (endTime / duration) * canvas.width;
     
-    ctx.fillStyle = 'rgba(16, 185, 129, 0.3)';
+    // Selection overlay
+    ctx.fillStyle = 'rgba(16, 185, 129, 0.2)';
     ctx.fillRect(startX, 0, endX - startX, canvas.height);
 
-    // Draw start handle
-    const handleWidth = 8;
-    const handleHeight = 30;
+    // Selection borders
+    ctx.fillStyle = 'rgba(16, 185, 129, 0.8)';
+    ctx.fillRect(startX, 0, 2, canvas.height);
+    ctx.fillRect(endX - 2, 0, 2, canvas.height);
+
+    // Trimmer handles
+    const handleWidth = 12;
+    const handleHeight = canvas.height;
     
+    // Start handle (triangle pointing right)
     ctx.fillStyle = '#10b981';
-    ctx.fillRect(startX - (handleWidth / 2), (canvas.height - handleHeight) / 2, handleWidth, handleHeight);
-    
-    // Draw end handle
-    ctx.fillStyle = '#10b981';
-    ctx.fillRect(endX - (handleWidth / 2), (canvas.height - handleHeight) / 2, handleWidth, handleHeight);
+    ctx.beginPath();
+    ctx.moveTo(startX, 0);
+    ctx.lineTo(startX + handleWidth, handleHeight / 2);
+    ctx.lineTo(startX, handleHeight);
+    ctx.closePath();
+    ctx.fill();
+
+    // End handle (triangle pointing left)
+    ctx.beginPath();
+    ctx.moveTo(endX, 0);
+    ctx.lineTo(endX - handleWidth, handleHeight / 2);
+    ctx.lineTo(endX, handleHeight);
+    ctx.closePath();
+    ctx.fill();
 
     // Draw current time line
     const currentX = (currentTime / duration) * canvas.width;
     ctx.strokeStyle = '#dc2626';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(currentX, 0);
     ctx.lineTo(currentX, canvas.height);
+    ctx.stroke();
+
+    // Add white border to current time line for better visibility
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(currentX - 1, 0);
+    ctx.lineTo(currentX - 1, canvas.height);
+    ctx.moveTo(currentX + 1, 0);
+    ctx.lineTo(currentX + 1, canvas.height);
     ctx.stroke();
   };
 
   useEffect(() => {
     drawWaveform();
-  }, [startTime, endTime, currentTime, duration]);
+  }, [startTime, endTime, currentTime, duration, audioBuffer]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile && selectedFile.type.startsWith('audio/')) {
       setFile(selectedFile);
+      setStartTime(0);
+      setCurrentTime(0);
+    } else if (selectedFile) {
+      toast({
+        title: "Format file tidak didukung",
+        description: "Silakan pilih file audio (MP3, WAV, AAC, dll).",
+        variant: "destructive",
+      });
     }
   };
 
@@ -119,6 +185,7 @@ const Mp3Cutter = () => {
       setIsPlaying(false);
     }
     setFile(null);
+    setAudioBuffer(null);
     setCurrentTime(0);
     setStartTime(0);
     setEndTime(0);
@@ -132,8 +199,10 @@ const Mp3Cutter = () => {
     const x = e.clientX - rect.left;
     const clickTime = (x / canvas.width) * duration;
 
-    audioRef.current.currentTime = clickTime;
-    setCurrentTime(clickTime);
+    // Ensure click time is within selection range for playback
+    const clampedTime = Math.max(startTime, Math.min(endTime, clickTime));
+    audioRef.current.currentTime = clampedTime;
+    setCurrentTime(clampedTime);
   };
 
   const handleCanvasMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -142,20 +211,18 @@ const Mp3Cutter = () => {
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
-    const clickTime = (x / canvas.width) * duration;
     
     const startHandleX = (startTime / duration) * canvas.width;
     const endHandleX = (endTime / duration) * canvas.width;
     const currentX = (currentTime / duration) * canvas.width;
     
-    // Check if click is close to start or end handle
-    const handleWidth = 12; // slightly larger for better clickability
+    const handleWidth = 15;
     
     if (Math.abs(x - startHandleX) <= handleWidth) {
       setIsDragging('start');
     } else if (Math.abs(x - endHandleX) <= handleWidth) {
       setIsDragging('end');
-    } else if (Math.abs(x - currentX) <= handleWidth) {
+    } else if (Math.abs(x - currentX) <= 8) {
       setIsDragging('current');
     }
   };
@@ -169,12 +236,13 @@ const Mp3Cutter = () => {
     const dragTime = (x / canvas.width) * duration;
     
     if (isDragging === 'start') {
-      setStartTime(Math.min(dragTime, endTime - 0.1));
+      setStartTime(Math.max(0, Math.min(dragTime, endTime - 0.1)));
     } else if (isDragging === 'end') {
-      setEndTime(Math.max(dragTime, startTime + 0.1));
+      setEndTime(Math.min(duration, Math.max(dragTime, startTime + 0.1)));
     } else if (isDragging === 'current' && audioRef.current) {
-      audioRef.current.currentTime = dragTime;
-      setCurrentTime(dragTime);
+      const clampedTime = Math.max(startTime, Math.min(endTime, dragTime));
+      audioRef.current.currentTime = clampedTime;
+      setCurrentTime(clampedTime);
     }
   };
 
@@ -200,10 +268,32 @@ const Mp3Cutter = () => {
     if (isPlaying) {
       audioRef.current.pause();
     } else {
+      // Ensure playback starts from current position within selection
+      if (audioRef.current.currentTime < startTime || audioRef.current.currentTime > endTime) {
+        audioRef.current.currentTime = startTime;
+      }
       audioRef.current.play();
     }
     setIsPlaying(!isPlaying);
   };
+
+  // Monitor playback to stop at end time
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const checkPlaybackBounds = () => {
+      if (audio.currentTime >= endTime && isPlaying) {
+        audio.pause();
+        setIsPlaying(false);
+        audio.currentTime = startTime;
+        setCurrentTime(startTime);
+      }
+    };
+
+    const interval = setInterval(checkPlaybackBounds, 100);
+    return () => clearInterval(interval);
+  }, [endTime, startTime, isPlaying]);
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
@@ -214,16 +304,10 @@ const Mp3Cutter = () => {
   const estimateOutputSize = () => {
     if (!file) return "0 KB";
     
-    // Calculate output duration
     const outputDuration = endTime - startTime;
-    
-    // Calculate bitrate in bytes per second
     const bitrateBytes = parseInt(bitrate) * 1024 / 8;
-    
-    // Estimate size based on duration and bitrate
     const estimatedBytes = outputDuration * bitrateBytes;
     
-    // Format the size
     if (estimatedBytes >= 1048576) {
       return (estimatedBytes / 1048576).toFixed(2) + " MB";
     } else {
@@ -232,7 +316,7 @@ const Mp3Cutter = () => {
   };
 
   const cutAudio = async () => {
-    if (!file) {
+    if (!file || !audioBuffer || !audioContextRef.current) {
       toast({
         title: "Tidak ada file yang dipilih",
         description: "Silakan pilih file audio terlebih dahulu.",
@@ -244,21 +328,59 @@ const Mp3Cutter = () => {
     setProcessing(true);
 
     try {
-      // Ini adalah versi sederhana - dalam aplikasi sebenarnya, gunakan Web Audio API
-      // Untuk saat ini, kita hanya akan membuat link unduh dengan file asli
-      const blob = new Blob([file], { type: 'audio/mp3' });
-      const url = URL.createObjectURL(blob);
+      const audioContext = audioContextRef.current;
+      const sampleRate = audioBuffer.sampleRate;
+      const startSample = Math.floor(startTime * sampleRate);
+      const endSample = Math.floor(endTime * sampleRate);
+      const length = endSample - startSample;
+
+      // Create new buffer for the cut audio
+      const cutBuffer = audioContext.createBuffer(
+        audioBuffer.numberOfChannels,
+        length,
+        sampleRate
+      );
+
+      // Copy audio data for each channel
+      for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+        const originalData = audioBuffer.getChannelData(channel);
+        const cutData = cutBuffer.getChannelData(channel);
+        
+        for (let i = 0; i < length; i++) {
+          let sample = originalData[startSample + i] || 0;
+          
+          // Apply fade effects if enabled
+          if (fadeIn && i < sampleRate * 0.1) { // 0.1 second fade in
+            sample *= i / (sampleRate * 0.1);
+          }
+          if (fadeOut && i > length - sampleRate * 0.1) { // 0.1 second fade out
+            sample *= (length - i) / (sampleRate * 0.1);
+          }
+          
+          cutData[i] = sample;
+        }
+      }
+
+      // Convert to WAV and then encode to MP3 (simplified approach)
+      const wavBlob = await bufferToWav(cutBuffer);
+      
+      // Create download
+      const originalName = file.name.replace(/\.[^/.]+$/, "");
+      const downloadName = `${originalName} (cut-amsy-toolbox).mp3`;
+      
+      const url = URL.createObjectURL(wavBlob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${file.name.split('.')[0]}_dipotong.mp3`;
+      a.download = downloadName;
       a.click();
       URL.revokeObjectURL(url);
 
       toast({
-        title: "Audio diproses",
-        description: "Audio yang dipotong siap untuk diunduh.",
+        title: "Audio berhasil dipotong",
+        description: `File "${downloadName}" siap untuk diunduh.`,
       });
     } catch (error) {
+      console.error('Error cutting audio:', error);
       toast({
         title: "Pemrosesan gagal",
         description: "Terjadi kesalahan saat memproses audio.",
@@ -267,6 +389,54 @@ const Mp3Cutter = () => {
     } finally {
       setProcessing(false);
     }
+  };
+
+  // Convert AudioBuffer to WAV blob
+  const bufferToWav = async (buffer: AudioBuffer): Promise<Blob> => {
+    const length = buffer.length;
+    const numberOfChannels = buffer.numberOfChannels;
+    const sampleRate = buffer.sampleRate;
+    const bytesPerSample = 2;
+    const blockAlign = numberOfChannels * bytesPerSample;
+    const byteRate = sampleRate * blockAlign;
+    const dataSize = length * blockAlign;
+    const bufferSize = 44 + dataSize;
+
+    const arrayBuffer = new ArrayBuffer(bufferSize);
+    const view = new DataView(arrayBuffer);
+
+    // WAV header
+    const writeString = (offset: number, string: string) => {
+      for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
+      }
+    };
+
+    writeString(0, 'RIFF');
+    view.setUint32(4, bufferSize - 8, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, numberOfChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, byteRate, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, bytesPerSample * 8, true);
+    writeString(36, 'data');
+    view.setUint32(40, dataSize, true);
+
+    // Convert audio data
+    let offset = 44;
+    for (let i = 0; i < length; i++) {
+      for (let channel = 0; channel < numberOfChannels; channel++) {
+        const sample = Math.max(-1, Math.min(1, buffer.getChannelData(channel)[i]));
+        view.setInt16(offset, sample * 0x7FFF, true);
+        offset += 2;
+      }
+    }
+
+    return new Blob([arrayBuffer], { type: 'audio/wav' });
   };
 
   return (
@@ -339,21 +509,24 @@ const Mp3Cutter = () => {
           {file && (
             <Card className="border-0 bg-white/70 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="font-poppins">Gelombang Suara</CardTitle>
+                <CardTitle className="font-poppins">Gelombang Suara & Trimmer</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4" ref={containerRef}>
                   <div className="relative">
                     <canvas
                       ref={canvasRef}
-                      className="w-full h-24 border border-gray-300 rounded cursor-pointer"
+                      className="w-full h-24 border border-gray-300 rounded cursor-pointer hover:border-green-400 transition-colors"
                       onClick={handleCanvasClick}
                       onMouseDown={handleCanvasMouseDown}
                       onMouseMove={handleCanvasMouseMove}
                       onMouseUp={handleCanvasMouseUp}
                     />
-                    <div className="absolute bottom-0 left-0 right-0 flex justify-between px-2 py-1 text-xs text-gray-500">
+                    <div className="absolute bottom-0 left-0 right-0 flex justify-between px-2 py-1 text-xs text-gray-500 bg-white/80">
                       <span>0:00</span>
+                      <span className="bg-green-100 px-2 py-0.5 rounded text-green-700 font-medium">
+                        Pilih area untuk dipotong
+                      </span>
                       <span>{formatTime(duration)}</span>
                     </div>
                   </div>
@@ -390,7 +563,7 @@ const Mp3Cutter = () => {
                       />
                     </div>
                   </div>
-                  <p className="text-sm text-gray-600 text-center">
+                  <p className="text-sm text-gray-600 text-center bg-green-50 p-2 rounded">
                     Durasi potongan: {formatTime(endTime - startTime)}
                   </p>
                 </div>
@@ -409,11 +582,11 @@ const Mp3Cutter = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <Label>Fade In</Label>
+                    <Label>Fade In (0.1 detik)</Label>
                     <Switch checked={fadeIn} onCheckedChange={setFadeIn} />
                   </div>
                   <div className="flex items-center justify-between">
-                    <Label>Fade Out</Label>
+                    <Label>Fade Out (0.1 detik)</Label>
                     <Switch checked={fadeOut} onCheckedChange={setFadeOut} />
                   </div>
                 </CardContent>
@@ -455,6 +628,7 @@ const Mp3Cutter = () => {
                   <div className="mt-2 p-3 bg-gray-50 rounded-md">
                     <p className="text-sm font-medium text-gray-700">Estimasi Ukuran Hasil</p>
                     <p className="text-sm text-gray-600">{estimateOutputSize()}</p>
+                    <p className="text-xs text-gray-500 mt-1">Format: MP3</p>
                   </div>
                 </CardContent>
               </Card>
