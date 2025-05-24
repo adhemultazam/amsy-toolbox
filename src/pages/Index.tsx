@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ImageIcon, AudioLinesIcon, TypeIcon, ComingSoonIcon } from "lucide-react";
+import { ImageIcon, AudioLinesIcon, TypeIcon, CalendarIcon, FileTextIcon, BarChartIcon, FileIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Index = () => {
@@ -31,28 +31,37 @@ const Index = () => {
       path: "/text-converter"
     },
     {
-      id: "coming-soon-1",
-      title: "Coming Soon",
-      description: "Segera Hadir - Fitur baru akan tersedia dalam waktu dekat",
-      icon: ComingSoonIcon,
-      gradient: "from-purple-500 to-indigo-600",
+      id: "pdf-tools",
+      title: "Alat PDF",
+      description: "Segera Hadir - Kompres, gabungkan, dan pisahkan file PDF dengan mudah",
+      icon: FileIcon,
+      gradient: "from-red-500 to-pink-600",
       path: "#",
       comingSoon: true
     },
     {
-      id: "coming-soon-2",
-      title: "Coming Soon",
-      description: "Segera Hadir - Fitur baru akan tersedia dalam waktu dekat",
-      icon: ComingSoonIcon,
+      id: "calendar-maker",
+      title: "Pembuat Kalender",
+      description: "Segera Hadir - Buat kalender kustom yang dapat dicetak dengan berbagai desain",
+      icon: CalendarIcon,
       gradient: "from-indigo-500 to-blue-600",
       path: "#",
       comingSoon: true
     },
     {
-      id: "coming-soon-3",
-      title: "Coming Soon",
-      description: "Segera Hadir - Fitur baru akan tersedia dalam waktu dekat",
-      icon: ComingSoonIcon,
+      id: "markdown-editor",
+      title: "Editor Markdown",
+      description: "Segera Hadir - Edit dan pratinjau dokumen markdown dengan antarmuka yang intuitif",
+      icon: FileTextIcon,
+      gradient: "from-purple-500 to-indigo-600",
+      path: "#",
+      comingSoon: true
+    },
+    {
+      id: "data-visualizer",
+      title: "Visualisasi Data",
+      description: "Segera Hadir - Buat grafik dan visualisasi dari data CSV dan Excel",
+      icon: BarChartIcon,
       gradient: "from-teal-500 to-green-600",
       path: "#",
       comingSoon: true
@@ -61,20 +70,21 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Full Screen Section with Header and Tools Grid */}
-      <section className="min-h-screen flex flex-col px-4 py-12">
-        {/* Header */}
-        <div className="max-w-6xl mx-auto text-center mb-16">
+      {/* Header */}
+      <header className="min-h-[90vh] flex flex-col justify-center items-center px-4 py-20">
+        <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-poppins bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            AMSY TOOLBOX
+            AMSY TOOLS
           </h1>
           <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto font-sans">
             Koleksi alat online yang powerful dan mudah digunakan untuk kebutuhan konversi dan pengeditan Anda
           </p>
         </div>
+      </header>
 
-        {/* Tools Grid */}
-        <div className="flex-grow max-w-6xl mx-auto">
+      {/* Tools Grid */}
+      <section className="px-4 pb-24">
+        <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-poppins font-semibold text-center mb-12">Alat yang Tersedia</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {tools.map((tool) => {
@@ -110,7 +120,7 @@ const Index = () => {
       <footer className="py-8 px-4 border-t border-gray-200">
         <div className="max-w-6xl mx-auto text-center">
           <p className="text-gray-500 font-sans">
-            © 2024 AMSY TOOLBOX. Hak Cipta Dilindungi.
+            © 2024 AMSY TOOLS. Hak Cipta Dilindungi.
           </p>
         </div>
       </footer>
