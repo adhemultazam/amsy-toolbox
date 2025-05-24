@@ -1,9 +1,8 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Copy, ArrowUpA, ArrowDownA, Type, RefreshCw, Scissors, Delete } from "lucide-react";
+import { ArrowLeft, Copy, ArrowUp, ArrowDown, Type, RefreshCw, Scissors, Delete } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
@@ -20,7 +19,7 @@ const TextConverter = () => {
       description: "Ubah ke SEMUA KAPITAL",
       convert: (text: string) => text.toUpperCase(),
       gradient: "from-red-500 to-pink-600",
-      icon: ArrowUpA
+      icon: ArrowUp
     },
     {
       id: "lowercase",
@@ -28,7 +27,7 @@ const TextConverter = () => {
       description: "ubah ke semua huruf kecil",
       convert: (text: string) => text.toLowerCase(),
       gradient: "from-blue-500 to-cyan-600",
-      icon: ArrowDownA
+      icon: ArrowDown
     },
     {
       id: "titlecase",
