@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Copy } from "lucide-react";
+import { ArrowLeft, Copy, ArrowUpA, ArrowDownA, Type, RefreshCw, Scissors, Delete } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
@@ -16,83 +16,77 @@ const TextConverter = () => {
   const converters = [
     {
       id: "uppercase",
-      name: "UPPERCASE",
-      description: "Convert to ALL CAPS",
+      name: "HURUF BESAR",
+      description: "Ubah ke SEMUA KAPITAL",
       convert: (text: string) => text.toUpperCase(),
-      gradient: "from-red-500 to-pink-600"
+      gradient: "from-red-500 to-pink-600",
+      icon: ArrowUpA
     },
     {
       id: "lowercase",
-      name: "lowercase",
-      description: "convert to all small letters",
+      name: "huruf kecil",
+      description: "ubah ke semua huruf kecil",
       convert: (text: string) => text.toLowerCase(),
-      gradient: "from-blue-500 to-cyan-600"
+      gradient: "from-blue-500 to-cyan-600",
+      icon: ArrowDownA
     },
     {
       id: "titlecase",
-      name: "Title Case",
-      description: "Convert To Title Case",
+      name: "Huruf Judul",
+      description: "Ubah Ke Huruf Judul",
       convert: (text: string) => text.replace(/\w\S*/g, (txt) => 
         txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
       ),
-      gradient: "from-purple-500 to-indigo-600"
+      gradient: "from-purple-500 to-indigo-600",
+      icon: Type
     },
     {
       id: "sentencecase",
-      name: "Sentence case",
-      description: "Convert to sentence case",
+      name: "Kalimat biasa",
+      description: "Huruf besar awal kalimat",
       convert: (text: string) => text.charAt(0).toUpperCase() + text.slice(1).toLowerCase(),
-      gradient: "from-green-500 to-emerald-600"
+      gradient: "from-green-500 to-emerald-600",
+      icon: Type
     },
     {
-      id: "camelcase",
-      name: "camelCase",
-      description: "convertToCamelCase",
+      id: "togglecase",
+      name: "ToGgLe CaSe",
+      description: "BerGanTiaN bEsAr kEcIl",
       convert: (text: string) => {
-        return text
-          .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => {
-            return index === 0 ? word.toLowerCase() : word.toUpperCase();
-          })
-          .replace(/\s+/g, '');
+        return text.split('').map((char, idx) => 
+          idx % 2 === 0 ? char.toUpperCase() : char.toLowerCase()
+        ).join('');
       },
-      gradient: "from-orange-500 to-yellow-600"
+      gradient: "from-orange-500 to-yellow-600",
+      icon: RefreshCw
     },
     {
-      id: "pascalcase",
-      name: "PascalCase",
-      description: "ConvertToPascalCase",
-      convert: (text: string) => {
-        return text
-          .replace(/(?:^\w|[A-Z]|\b\w)/g, (word) => word.toUpperCase())
-          .replace(/\s+/g, '');
-      },
-      gradient: "from-teal-500 to-cyan-600"
+      id: "trim",
+      name: "Pangkas Spasi",
+      description: "Hapus spasi di awal & akhir",
+      convert: (text: string) => text.trim(),
+      gradient: "from-teal-500 to-cyan-600",
+      icon: Scissors
     },
     {
-      id: "snakecase",
-      name: "snake_case",
-      description: "convert_to_snake_case",
-      convert: (text: string) => {
-        return text
-          .replace(/\W+/g, ' ')
-          .split(/ |\B(?=[A-Z])/)
-          .map(word => word.toLowerCase())
-          .join('_');
-      },
-      gradient: "from-gray-500 to-slate-600"
+      id: "remove-line-breaks",
+      name: "Hapus Baris Baru",
+      description: "Menghapus semua pemisah baris",
+      convert: (text: string) => text.replace(/(\r\n|\n|\r)/gm, " "),
+      gradient: "from-gray-500 to-slate-600",
+      icon: Delete
     },
     {
-      id: "kebabcase",
-      name: "kebab-case",
-      description: "convert-to-kebab-case",
+      id: "sentencecase-standard",
+      name: "Kalimat standar",
+      description: "Huruf besar setelah titik",
       convert: (text: string) => {
-        return text
-          .replace(/\W+/g, ' ')
-          .split(/ |\B(?=[A-Z])/)
-          .map(word => word.toLowerCase())
-          .join('-');
+        return text.replace(/(^\s*|\.\s+)([a-z])/gm, function(match, p1, p2) {
+          return p1 + p2.toUpperCase();
+        });
       },
-      gradient: "from-violet-500 to-purple-600"
+      gradient: "from-violet-500 to-purple-600",
+      icon: Type
     }
   ];
 
@@ -109,8 +103,8 @@ const TextConverter = () => {
     if (outputText) {
       navigator.clipboard.writeText(outputText);
       toast({
-        title: "Copied!",
-        description: "Text copied to clipboard successfully.",
+        title: "Disalin!",
+        description: "Teks berhasil disalin ke clipboard.",
       });
     }
   };
@@ -131,8 +125,8 @@ const TextConverter = () => {
               Kembali
             </Button>
           </Link>
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-            Text Case Converter
+          <h1 className="text-xl md:text-2xl font-bold font-heading bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+            Konverter Format Teks
           </h1>
         </div>
       </header>
@@ -142,21 +136,21 @@ const TextConverter = () => {
           {/* Input Section */}
           <Card className="border-0 bg-white/70 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle>Input Text</CardTitle>
+              <CardTitle className="font-heading">Teks Masukan</CardTitle>
             </CardHeader>
             <CardContent>
               <Textarea
-                placeholder="Type or paste your text here..."
+                placeholder="Ketik atau tempel teks Anda di sini..."
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 className="min-h-[200px] resize-none"
               />
               <div className="flex justify-between items-center mt-4">
                 <span className="text-sm text-gray-500">
-                  {inputText.length} characters
+                  {inputText.length} karakter
                 </span>
                 <Button onClick={clearText} variant="outline" size="sm">
-                  Clear
+                  Hapus
                 </Button>
               </div>
             </CardContent>
@@ -165,18 +159,18 @@ const TextConverter = () => {
           {/* Output Section */}
           <Card className="border-0 bg-white/70 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle>Output Text</CardTitle>
+              <CardTitle className="font-heading">Hasil Konversi</CardTitle>
             </CardHeader>
             <CardContent>
               <Textarea
-                placeholder="Converted text will appear here..."
+                placeholder="Teks hasil konversi akan muncul di sini..."
                 value={outputText}
                 readOnly
                 className="min-h-[200px] resize-none bg-gray-50"
               />
               <div className="flex justify-between items-center mt-4">
                 <span className="text-sm text-gray-500">
-                  {outputText.length} characters
+                  {outputText.length} karakter
                 </span>
                 <Button
                   onClick={copyToClipboard}
@@ -185,7 +179,7 @@ const TextConverter = () => {
                   size="sm"
                 >
                   <Copy className="w-4 h-4 mr-2" />
-                  Copy
+                  Salin
                 </Button>
               </div>
             </CardContent>
@@ -195,28 +189,34 @@ const TextConverter = () => {
         {/* Conversion Options */}
         <Card className="border-0 bg-white/70 backdrop-blur-sm mt-8">
           <CardHeader>
-            <CardTitle>Conversion Options</CardTitle>
+            <CardTitle className="font-heading">Pilihan Konversi</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {converters.map((converter) => (
-                <Button
-                  key={converter.id}
-                  onClick={() => handleConvert(converter.id)}
-                  disabled={!inputText}
-                  variant={activeConverter === converter.id ? "default" : "outline"}
-                  className={`h-auto p-4 flex flex-col items-start gap-2 ${
-                    activeConverter === converter.id
-                      ? `bg-gradient-to-r ${converter.gradient} text-white hover:opacity-90`
-                      : 'hover:border-gray-400'
-                  }`}
-                >
-                  <span className="font-medium text-sm">{converter.name}</span>
-                  <span className="text-xs opacity-80 text-left leading-tight">
-                    {converter.description}
-                  </span>
-                </Button>
-              ))}
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {converters.map((converter) => {
+                const IconComponent = converter.icon;
+                return (
+                  <Button
+                    key={converter.id}
+                    onClick={() => handleConvert(converter.id)}
+                    disabled={!inputText}
+                    variant={activeConverter === converter.id ? "default" : "outline"}
+                    className={`h-auto p-4 flex flex-col items-start gap-2 ${
+                      activeConverter === converter.id
+                        ? `bg-gradient-to-r ${converter.gradient} text-white hover:opacity-90`
+                        : 'hover:border-gray-400'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <IconComponent className="w-4 h-4" />
+                      <span className="font-medium text-sm">{converter.name}</span>
+                    </div>
+                    <span className="text-xs opacity-80 text-left leading-tight">
+                      {converter.description}
+                    </span>
+                  </Button>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
@@ -224,15 +224,15 @@ const TextConverter = () => {
         {/* Quick Actions */}
         <div className="mt-8 text-center">
           <p className="text-gray-600 mb-4">
-            Select a conversion type above to transform your text instantly
+            Pilih jenis konversi di atas untuk mengubah teks Anda secara instan
           </p>
-          <div className="flex justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-4">
             <Button
               onClick={() => handleConvert(activeConverter)}
               disabled={!inputText}
-              className="bg-gradient-to-r from-orange-500 to-red-600 hover:opacity-90"
+              className="bg-gradient-to-r from-orange-500 to-red-600 hover:opacity-90 font-heading"
             >
-              Convert Text
+              Konversi Teks
             </Button>
           </div>
         </div>
