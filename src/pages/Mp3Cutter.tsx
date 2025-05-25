@@ -25,6 +25,8 @@ const Mp3Cutter = () => {
     endTime,
     fadeIn,
     fadeOut,
+    fadeInDuration,
+    fadeOutDuration,
     bitrate,
     sampleRate,
     processing,
@@ -38,6 +40,8 @@ const Mp3Cutter = () => {
     setEndTime,
     setFadeIn,
     setFadeOut,
+    setFadeInDuration,
+    setFadeOutDuration,
     setBitrate,
     setSampleRate,
     setProcessing,
@@ -138,11 +142,13 @@ const Mp3Cutter = () => {
         for (let i = 0; i < length; i++) {
           let sample = originalData[startSample + i] || 0;
           
-          if (fadeIn && i < sampleRate * 0.1) {
-            sample *= i / (sampleRate * 0.1);
+          // Gunakan fadeInDuration yang dapat disesuaikan
+          if (fadeIn && i < sampleRate * fadeInDuration) {
+            sample *= i / (sampleRate * fadeInDuration);
           }
-          if (fadeOut && i > length - sampleRate * 0.1) {
-            sample *= (length - i) / (sampleRate * 0.1);
+          // Gunakan fadeOutDuration yang dapat disesuaikan
+          if (fadeOut && i > length - sampleRate * fadeOutDuration) {
+            sample *= (length - i) / (sampleRate * fadeOutDuration);
           }
           
           cutData[i] = sample;
@@ -237,8 +243,12 @@ const Mp3Cutter = () => {
                 <AudioEffects
                   fadeIn={fadeIn}
                   fadeOut={fadeOut}
+                  fadeInDuration={fadeInDuration}
+                  fadeOutDuration={fadeOutDuration}
                   onFadeInChange={setFadeIn}
                   onFadeOutChange={setFadeOut}
+                  onFadeInDurationChange={setFadeInDuration}
+                  onFadeOutDurationChange={setFadeOutDuration}
                 />
 
                 <OutputSettings

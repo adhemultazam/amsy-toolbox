@@ -12,6 +12,9 @@ export const useAudioProcessor = () => {
   const [endTime, setEndTime] = useState(0);
   const [fadeIn, setFadeIn] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
+  // Tambahkan state untuk durasi fade (dalam detik)
+  const [fadeInDuration, setFadeInDuration] = useState(0.1);
+  const [fadeOutDuration, setFadeOutDuration] = useState(0.1);
   const [bitrate, setBitrate] = useState("128");
   const [sampleRate, setSampleRate] = useState("44100");
   const [processing, setProcessing] = useState(false);
@@ -105,13 +108,13 @@ export const useAudioProcessor = () => {
     endTime,
     fadeIn,
     fadeOut,
+    fadeInDuration,
+    fadeOutDuration,
     bitrate,
     sampleRate,
     processing,
     isDragging,
     audioBuffer,
-    
-    // Refs
     audioRef,
     audioContextRef,
     
@@ -122,13 +125,15 @@ export const useAudioProcessor = () => {
     setEndTime,
     setFadeIn,
     setFadeOut,
+    setFadeInDuration,
+    setFadeOutDuration,
     setBitrate,
     setSampleRate,
     setProcessing,
     setIsDragging,
     setIsPlaying,
     
-    // Functions
+    // Methods
     loadAudioBuffer,
     handleFileSelect,
     removeFile,
