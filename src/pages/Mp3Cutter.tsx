@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useAudioProcessor } from "@/hooks/useAudioProcessor";
-import { bufferToWav } from "@/utils/audioUtils";
+import { bufferToMp3 } from "@/utils/audioUtils";
 
 import AudioUpload from "@/components/AudioUpload";
 import WaveformViewer from "@/components/WaveformViewer";
@@ -149,12 +149,13 @@ const Mp3Cutter = () => {
         }
       }
 
-      const wavBlob = await bufferToWav(cutBuffer);
+      // Gunakan bufferToMp3 dengan bitrate yang dipilih pengguna
+      const mp3Blob = await bufferToMp3(cutBuffer, parseInt(bitrate));
       
       const originalName = file.name.replace(/\.[^/.]+$/, "");
       const downloadName = `${originalName} (cut-amsy-toolbox).mp3`;
       
-      const url = URL.createObjectURL(wavBlob);
+      const url = URL.createObjectURL(mp3Blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = downloadName;
