@@ -1,39 +1,17 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Wand2 } from 'lucide-react';
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
-
-const cameraMovements = [
-    { value: 'Static', label: 'Static (Statis)' },
-    { value: '3D Rotation', label: '3D Rotation (Rotasi 3D)' },
-    { value: 'Arc Shot', label: 'Arc Shot (Tembakan Busur)' },
-    { value: 'Crane Shot', label: 'Crane Shot (Tembakan Derek)' },
-    { value: 'Dolly In', label: 'Dolly In (Dolly Masuk)' },
-    { value: 'Dolly Out', label: 'Dolly Out (Dolly Keluar)' },
-    { value: 'Drone Shot / Aerial View', label: 'Drone Shot / Aerial View (Tembakan Drone)' },
-    { value: 'Dutch Angle / Canted Angle', label: 'Dutch Angle (Sudut Belanda)' },
-    { value: 'Handheld', label: 'Handheld (Genggam)' },
-    { value: 'Pan Left', label: 'Pan Left (Geser Kiri)' },
-    { value: 'Pan Right', label: 'Pan Right (Geser Kanan)' },
-    { value: 'Pedestal Down', label: 'Pedestal Down (Turun)' },
-    { value: 'Pedestal Up', label: 'Pedestal Up (Naik)' },
-    { value: 'Steadicam', label: 'Steadicam (Steadicam)' },
-    { value: 'Tilt Down', label: 'Tilt Down (Miring ke Bawah)' },
-    { value: 'Tilt Up', label: 'Tilt Up (Miring ke Atas)' },
-    { value: 'Tracking Shot', label: 'Tracking Shot (Tembakan Mengikuti)' },
-    { value: 'Truck Left', label: 'Truck Left (Geser Kiri)' },
-    { value: 'Truck Right', label: 'Truck Right (Geser Kanan)' },
-    { value: 'Whip Pan', label: 'Whip Pan (Geser Cepat)' },
-    { value: 'Zoom In', label: 'Zoom In (Perbesar)' },
-    { value: 'Zoom Out', label: 'Zoom Out (Perkecil)' },
-];
+import SubjectDetailsForm from '@/components/veo/SubjectDetailsForm';
+import EnvironmentForm from '@/components/veo/EnvironmentForm';
+import CinematographyForm from '@/components/veo/CinematographyForm';
+import AudioForm from '@/components/veo/AudioForm';
+import TechnicalParamsForm from '@/components/veo/TechnicalParamsForm';
+import PromptResults from '@/components/veo/PromptResults';
 
 const VeoPromptGenerator = () => {
     const [sceneTitle, setSceneTitle] = useState('');
@@ -119,7 +97,7 @@ const VeoPromptGenerator = () => {
         
         toast({
           title: "Prompt Berhasil Dibuat!",
-          description: "Hasil prompt telah ditampilkan di bawah.",
+          description: "Hasil prompt telah ditampilkan di samping.",
         });
     };
 
@@ -132,7 +110,7 @@ const VeoPromptGenerator = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+        <div className="min-h-screen bg-gray-50 p-2 sm:p-4 lg:p-6">
             <div className="max-w-7xl mx-auto">
                 <div className="mb-6">
                     <Link to="/" className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900">
@@ -153,59 +131,34 @@ const VeoPromptGenerator = () => {
                             </div>
                         </CardHeader>
                         <CardContent className="space-y-6">
-                            {/* Kategori: Detail Subjek dan Aksi */}
-                            <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
-                                <h3 className="text-base sm:text-lg font-semibold mb-4 text-purple-800">Detail Subjek dan Aksi</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="space-y-2 md:col-span-2"><Label htmlFor="sceneTitle" className="text-sm font-medium">Judul Scene</Label><Input id="sceneTitle" placeholder="Pasar terapung di Kalimantan saat fajar" value={sceneTitle} onChange={(e) => setSceneTitle(e.target.value)} /></div>
-                                    <div className="space-y-2 md:col-span-2"><Label htmlFor="characterDescription" className="text-sm font-medium">Deskripsi Karakter Inti</Label><Textarea id="characterDescription" placeholder="Seorang ibu pedagang paruh baya dengan senyum ramah, mengenakan caping dan baju batik sederhana, mendayung perahu kecil penuh dengan buah-buahan tropis." value={characterDescription} onChange={(e) => setCharacterDescription(e.target.value)} rows={5} /></div>
-                                    <div className="space-y-2"><Label htmlFor="characterAction" className="text-sm font-medium">Aksi Karakter</Label><Textarea id="characterAction" placeholder="menawarkan dagangannya kepada pembeli di perahu lain" value={characterAction} onChange={(e) => setCharacterAction(e.target.value)} /></div>
-                                    <div className="space-y-2"><Label htmlFor="characterExpression" className="text-sm font-medium">Ekspresi Karakter</Label><Textarea id="characterExpression" placeholder="tulus dan hangat, matanya berbinar saat berinteraksi" value={characterExpression} onChange={(e) => setCharacterExpression(e.target.value)} /></div>
-                                </div>
-                            </div>
+                            <SubjectDetailsForm 
+                                sceneTitle={sceneTitle} setSceneTitle={setSceneTitle}
+                                characterDescription={characterDescription} setCharacterDescription={setCharacterDescription}
+                                characterAction={characterAction} setCharacterAction={setCharacterAction}
+                                characterExpression={characterExpression} setCharacterExpression={setCharacterExpression}
+                            />
+                            
+                            <EnvironmentForm
+                                settingAndTime={settingAndTime} setSettingAndTime={setSettingAndTime}
+                                atmosphere={atmosphere} setAtmosphere={setAtmosphere}
+                            />
 
-                            {/* Kategori: Lingkungan dan Atmosfer */}
-                            <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-                                <h3 className="text-base sm:text-lg font-semibold mb-4 text-green-800">Lingkungan dan Atmosfer</h3>
-                                <div className="grid grid-cols-1 gap-4">
-                                    <div className="space-y-2"><Label htmlFor="settingAndTime" className="text-sm font-medium">Latar Tempat & Waktu</Label><Textarea id="settingAndTime" placeholder="sungai yang ramai dengan perahu lain, saat matahari terbit memancarkan cahaya keemasan di atas air yang tenang" value={settingAndTime} onChange={(e) => setSettingAndTime(e.target.value)} rows={3} /></div>
-                                    <div className="space-y-2"><Label htmlFor="atmosphere" className="text-sm font-medium">Suasana Keseluruhan</Label><Textarea id="atmosphere" placeholder="Penuh kehidupan, otentik, dan damai." value={atmosphere} onChange={(e) => setAtmosphere(e.target.value)} /></div>
-                                </div>
-                            </div>
+                            <CinematographyForm
+                                cameraMovement={cameraMovement} setCameraMovement={setCameraMovement}
+                                lighting={lighting} setLighting={setLighting}
+                                artStyle={artStyle} setArtStyle={setArtStyle}
+                            />
+                           
+                            <AudioForm
+                                characterVoice={characterVoice} setCharacterVoice={setCharacterVoice}
+                                ambienceSound={ambienceSound} setAmbienceSound={setAmbienceSound}
+                                dialogue={dialogue} setDialogue={setDialogue}
+                            />
 
-                            {/* Kategori: Sinematografi */}
-                            <div className="p-3 bg-sky-50 rounded-lg border border-sky-200">
-                                <h3 className="text-base sm:text-lg font-semibold mb-4 text-sky-800">Sinematografi</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div className="space-y-2"><Label className="text-sm font-medium">Gerakan Kamera</Label>
-                                        <Select value={cameraMovement} onValueChange={setCameraMovement}>
-                                            <SelectTrigger><SelectValue /></SelectTrigger>
-                                            <SelectContent>{cameraMovements.map(m => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="space-y-2"><Label className="text-sm font-medium">Pencahayaan</Label><Input placeholder="pagi yang lembut dan hangat, menciptakan bayangan panjang" value={lighting} onChange={(e) => setLighting(e.target.value)} /></div>
-                                    <div className="space-y-2"><Label className="text-sm font-medium">Gaya Video/Art Style</Label><Input placeholder="dokumenter sinematik, dengan fokus pada detail dan emosi" value={artStyle} onChange={(e) => setArtStyle(e.target.value)} /></div>
-                                </div>
-                            </div>
-
-                            {/* Kategori: Audio */}
-                            <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
-                                <h3 className="text-base sm:text-lg font-semibold mb-4 text-amber-800">Audio</h3>
-                                <div className="grid grid-cols-1 gap-4">
-                                    <div className="space-y-2"><Label htmlFor="characterVoice" className="text-sm font-medium">Detail Suara Karakter</Label><Textarea id="characterVoice" placeholder="Suara yang lembut dan ramah, dengan logat lokal yang kental namun jelas." value={characterVoice} onChange={(e) => setCharacterVoice(e.target.value)} rows={4} /></div>
-                                    <div className="space-y-2"><Label htmlFor="ambienceSound" className="text-sm font-medium">Suara Lingkungan/Ambiance</Label><Textarea id="ambienceSound" placeholder="Suara riak air, percakapan tawar-menawar yang samar, dan kicauan burung." value={ambienceSound} onChange={(e) => setAmbienceSound(e.target.value)} /></div>
-                                    <div className="space-y-2"><Label htmlFor="dialogue" className="text-sm font-medium">Dialog Karakter</Label><Textarea id="dialogue" placeholder="Mari, dipilih buahnya, manis-manis semua!" value={dialogue} onChange={(e) => setDialogue(e.target.value)} rows={3} /></div>
-                                </div>
-                            </div>
-
-                             {/* Kategori: Parameter Teknis dan Tambahan */}
-                             <div className="p-3 bg-red-50 rounded-lg border border-red-200">
-                                <h3 className="text-base sm:text-lg font-semibold mb-4 text-red-800">Parameter Teknis dan Tambahan</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="space-y-2"><Label className="text-sm font-medium">Kualitas Visual</Label><Input placeholder="Resolusi 4K, warna natural, tekstur detail pada air dan kain batik." value={visualQuality} onChange={(e) => setVisualQuality(e.target.value)} /></div>
-                                    <div className="space-y-2 md:col-span-2"><Label htmlFor="negativePrompt" className="text-sm font-medium">Negative Prompt</Label><Textarea id="negativePrompt" placeholder="Gaya animasi, warna tidak realistis, perahu modern, turis." value={negativePrompt} onChange={(e) => setNegativePrompt(e.target.value)} rows={3} /></div>
-                                </div>
-                            </div>
+                            <TechnicalParamsForm
+                                visualQuality={visualQuality} setVisualQuality={setVisualQuality}
+                                negativePrompt={negativePrompt} setNegativePrompt={setNegativePrompt}
+                            />
                             
                             <div>
                                 <Button onClick={handleGeneratePrompt} className="w-full text-lg py-6 bg-purple-600 hover:bg-purple-700">
@@ -217,26 +170,12 @@ const VeoPromptGenerator = () => {
                     </Card>
 
                     {indonesianPrompt && englishPrompt && (
-                        <div className="sticky top-8">
-                            <Card className="bg-purple-50 border-2 border-purple-200">
-                                <CardHeader>
-                                    <CardTitle className="text-xl sm:text-2xl">Hasil Prompt</CardTitle>
-                                    <CardDescription className="text-sm text-gray-500">Berikut adalah prompt yang dihasilkan dalam Bahasa Indonesia dan Inggris.</CardDescription>
-                                </CardHeader>
-                                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <Label className="text-base sm:text-lg font-semibold">Bahasa Indonesia (Dapat Diedit)</Label>
-                                        <Textarea value={indonesianPrompt} onChange={(e) => setIndonesianPrompt(e.target.value)} rows={15} className="mt-2 font-sans text-sm" />
-                                        <Button onClick={() => copyToClipboard(indonesianPrompt, "Indonesia")} variant="outline" className="mt-2 w-full">Salin Prompt Indonesia</Button>
-                                    </div>
-                                    <div>
-                                        <Label className="text-base sm:text-lg font-semibold">Bahasa Inggris (Final)</Label>
-                                        <Textarea value={englishPrompt} readOnly rows={15} className="mt-2 font-sans text-sm bg-gray-100" />
-                                        <Button onClick={() => copyToClipboard(englishPrompt, "Inggris")} variant="outline" className="mt-2 w-full">Salin Prompt Inggris</Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
+                        <PromptResults 
+                            indonesianPrompt={indonesianPrompt}
+                            setIndonesianPrompt={setIndonesianPrompt}
+                            englishPrompt={englishPrompt}
+                            copyToClipboard={copyToClipboard}
+                        />
                     )}
                 </div>
             </div>
