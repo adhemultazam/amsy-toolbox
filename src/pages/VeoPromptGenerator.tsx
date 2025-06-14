@@ -36,33 +36,86 @@ const cameraMovements = [
 ];
 
 const VeoPromptGenerator = () => {
-    const [sceneTitle, setSceneTitle] = useState('terminal bus malam');
-    const [characterDescription, setCharacterDescription] = useState('Seorang vlogger wanita muda asal Minang berusia 27 tahun. Perawakan/Bentuk Tubuh: tubuh mungil, tinggi 158cm, bentuk badan proporsional. warna kulit: sawo matang cerah. Rambut: ikal sebahu, hitam kecokelatan, diikat setengah ke belakang. Wajah: wajah oval, alis tebal alami, mata hitam besar, senyum ramah, pipi merona, bibir natural dengan sentuhan lip tint. Pakaian: mengenakan jaket parasut warna kuning mustard dan celana panjang hitam, membawa ransel kecil.');
-    const [characterVoice, setCharacterVoice] = useState('Dia berbicara dengan suara wanita muda yang hangat dan penuh semangat. Nada: mezzo-soprano. Timbre: bersahabat dan enerjik. Aksen/Logat: logat Indonesia dengan sentuhan khas Minang halus, berbicara murni dalam Bahasa Indonesia. Cara Berbicara: tempo sedang-cepat, gaya bicara lincah dan ekspresif. PENTING: Seluruh dialog harus dalam Bahasa Indonesia dengan pengucapan natural dan jelas. Pastikan suara karakter ini konsisten di seluruh video.');
-    const [characterAction, setCharacterAction] = useState('berjalan di sekitar terminal bus malam sambil melihat-lihat aktivitas penumpang dan pedagang.');
-    const [characterExpression, setCharacterExpression] = useState('Karakter menunjukkan ekspresi kagum dan antusias, sering tersenyum sambil melirik kamera.');
-    const [settingAndTime, setSettingAndTime] = useState('latar tempat: di terminal bus antar kota malam hari, terdapat pedagang kaki lima di pinggir jalur keberangkatan, beberapa bus berjajar dengan lampu menyala. Waktu: malam hari, hujan rintik-rintik.');
+    const [sceneTitle, setSceneTitle] = useState('');
+    const [characterDescription, setCharacterDescription] = useState('');
+    const [characterVoice, setCharacterVoice] = useState('');
+    const [characterAction, setCharacterAction] = useState('');
+    const [characterExpression, setCharacterExpression] = useState('');
+    const [settingAndTime, setSettingAndTime] = useState('');
     const [cameraMovement, setCameraMovement] = useState('Tracking Shot');
-    const [lighting, setLighting] = useState('natural dari lampu jalan dan lampu bus, pantulan cahaya pada aspal basah.');
-    const [artStyle, setArtStyle] = useState('cinematic realistis');
-    const [visualQuality, setVisualQuality] = useState('Resolusi 4K');
-    const [atmosphere, setAtmosphere] = useState('Suasana sibuk, ramai, dengan kesan perjalanan malam yang hidup dan dinamis meskipun hujan.');
-    const [ambienceSound, setAmbienceSound] = useState('SOUND: suara mesin bus menyala, pengumuman dari pengeras suara, derai hujan ringan, dan percakapan samar antar penumpang dan pedagang.');
-    const [dialogue, setDialogue] = useState('Karakter berkata: Tiap kota punya terminal kayak gini, dan aku suka banget suasana malamnya… hangat walau gerimis begini. Rasanya kayak perjalanan baru mau dimulai.');
-    const [negativePrompt, setNegativePrompt] = useState('teks di layar, subtitle, tulisan di video, font, logo, distorsi, artefak, anomali, wajah ganda, anggota badan cacat, tangan tidak normal, orang tambahan, objek mengganggu, kualitas rendah, buram, glitch, suara robotik, suara pecah.');
+    const [lighting, setLighting] = useState('');
+    const [artStyle, setArtStyle] = useState('');
+    const [visualQuality, setVisualQuality] = useState('');
+    const [atmosphere, setAtmosphere] = useState('');
+    const [ambienceSound, setAmbienceSound] = useState('');
+    const [dialogue, setDialogue] = useState('');
+    const [negativePrompt, setNegativePrompt] = useState('');
 
     const [indonesianPrompt, setIndonesianPrompt] = useState('');
     const [englishPrompt, setEnglishPrompt] = useState('');
 
     const handleGeneratePrompt = () => {
         const state = { sceneTitle, characterDescription, characterVoice, characterAction, characterExpression, settingAndTime, cameraMovement, lighting, artStyle, visualQuality, atmosphere, ambienceSound, dialogue, negativePrompt };
-        
-        const idPrompt = `**Judul Adegan:** ${state.sceneTitle}\n\n**Prompt Lengkap (Bahasa Indonesia):**\nSebuah video bergaya **${state.artStyle}** yang menampilkan adegan di **${state.settingAndTime}**. Fokus utama pada karakter dengan deskripsi: **${state.characterDescription}**. Karakter ini terlihat sedang melakukan aksi **${state.characterAction}**, sambil menunjukkan ekspresi **${state.characterExpression}**. Suara karakter konsisten dengan detail berikut: **${state.characterVoice}**. Suasana keseluruhan video terasa **${state.atmosphere}**, didukung oleh suara lingkungan seperti **${state.ambienceSound}**. Secara visual, video ini memiliki kualitas **${state.visualQuality}** dengan pencahayaan **${state.lighting}**. Gerakan kamera yang digunakan adalah **${state.cameraMovement}**, menciptakan nuansa sinematik yang mendalam.\n\n**Dialog Karakter (Bahasa Indonesia):**\nDIALOG: ${state.dialogue}\n\n**Prompt Negatif:**\nHindari: ${state.negativePrompt}.`;
-        
-        const enPrompt = `**Scene Title:** ${state.sceneTitle}\n\n**Full Prompt (English):**\nA **${state.artStyle}** style video showcasing a scene set at **${state.settingAndTime}**. The main focus is on a character with the following description: **${state.characterDescription}**. This character is seen performing the action of **${state.characterAction}**, while showing an expression of **${state.characterExpression}**. The character's voice is consistent with these details: **${state.characterVoice}**. The overall atmosphere of the video feels **${state.atmosphere}**, supported by ambient sounds such as **${state.ambienceSound}**. Visually, the video has **${state.visualQuality}** quality with **${state.lighting}** lighting. The camera movement used is **${state.cameraMovement}**, creating a deep cinematic feel.\n\n**Character Dialogue (in Indonesian):**\nDIALOGUE: ${state.dialogue}\n\n**Negative Prompt:**\nAvoid: ${state.negativePrompt}.`;
+        const isProvided = (value: string) => value && value.trim() !== '';
 
-        setIndonesianPrompt(idPrompt);
-        setEnglishPrompt(enPrompt);
+        // Indonesian Prompt
+        const characterStr = isProvided(state.characterDescription) ? `tentang ${state.characterDescription}` : 'tentang sebuah subjek';
+        const actionStr = isProvided(state.characterAction) ? `yang sedang ${state.characterAction}` : '';
+        const expressionStr = isProvided(state.characterExpression) ? ` dengan ekspresi ${state.characterExpression}` : '';
+        const settingStr = isProvided(state.settingAndTime) ? ` di ${state.settingAndTime}` : '';
+        const atmosphereStr = isProvided(state.atmosphere) ? ` dalam suasana ${state.atmosphere}` : '';
+
+        const mainDesc = `Buat video bergaya ${state.artStyle || 'realistis'} ${characterStr} ${actionStr}${expressionStr}${settingStr}${atmosphereStr}.`.replace(/ ,/g, ',').replace(/ \./g, '.').replace(/  +/g, ' ').trim();
+
+        const cinematographyDesc = `Gunakan pergerakan kamera ${state.cameraMovement || 'statis'} dengan pencahayaan ${state.lighting || 'alami'}.`;
+
+        let audioDesc = 'Tanpa audio.';
+        const audioParts = [];
+        if (isProvided(state.dialogue)) audioParts.push(`Dialog: "${state.dialogue}"`);
+        if (isProvided(state.characterVoice)) audioParts.push(`Deskripsi suara: ${state.characterVoice}`);
+        if (isProvided(state.ambienceSound)) audioParts.push(`Suara lingkungan: ${state.ambienceSound}`);
+        if (audioParts.length > 0) {
+            audioDesc = audioParts.join('. ');
+        }
+
+        const techSpec = isProvided(state.visualQuality) ? `Spesifikasi teknis: ${state.visualQuality}.` : '';
+
+        const idPrompt = [mainDesc, cinematographyDesc, audioDesc, techSpec]
+            .filter(Boolean)
+            .join('\n\n');
+        
+        const finalIdPrompt = `${idPrompt}\n\n**Prompt Negatif:**\nHindari: ${state.negativePrompt || 'tidak ada'}.`;
+
+        // English Prompt
+        const enCharacterStr = isProvided(state.characterDescription) ? `about ${state.characterDescription}` : 'about a subject';
+        const enActionStr = isProvided(state.characterAction) ? ` who is ${state.characterAction}` : '';
+        const enExpressionStr = isProvided(state.characterExpression) ? ` with an expression of ${state.characterExpression}` : '';
+        const enSettingStr = isProvided(state.settingAndTime) ? ` at ${state.settingAndTime}` : '';
+        const enAtmosphereStr = isProvided(state.atmosphere) ? ` in an atmosphere of ${state.atmosphere}` : '';
+
+        const enMainDesc = `Create a ${state.artStyle || 'realistic'} style video ${enCharacterStr}${enActionStr}${enExpressionStr}${enSettingStr}${enAtmosphereStr}.`.replace(/ ,/g, ',').replace(/ \./g, '.').replace(/  +/g, ' ').trim();
+        
+        const enCinematographyDesc = `Use ${state.cameraMovement || 'static'} camera movement with ${state.lighting || 'natural'} lighting.`;
+
+        let enAudioDesc = 'No audio.';
+        const enAudioParts = [];
+        if (isProvided(state.dialogue)) enAudioParts.push(`Dialogue: "${state.dialogue}"`); // Dialogue not translated
+        if (isProvided(state.characterVoice)) enAudioParts.push(`Voice description: ${state.characterVoice}`);
+        if (isProvided(state.ambienceSound)) enAudioParts.push(`Ambient sound: ${state.ambienceSound}`);
+        if (enAudioParts.length > 0) {
+            enAudioDesc = enAudioParts.join('. ');
+        }
+
+        const enTechSpec = isProvided(state.visualQuality) ? `Technical specifications: ${state.visualQuality}.` : '';
+
+        const enPrompt = [enMainDesc, enCinematographyDesc, enAudioDesc, enTechSpec]
+            .filter(Boolean)
+            .join('\n\n');
+            
+        const finalEnPrompt = `${enPrompt}\n\n**Negative Prompt:**\nAvoid: ${state.negativePrompt || 'none'}.`;
+
+        setIndonesianPrompt(finalIdPrompt);
+        setEnglishPrompt(finalEnPrompt);
         
         toast({
           title: "Prompt Berhasil Dibuat!",
@@ -98,36 +151,62 @@ const VeoPromptGenerator = () => {
                             </div>
                         </div>
                     </CardHeader>
-                    <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                        {/* Form Inputs */}
-                        <div className="space-y-2"><Label htmlFor="sceneTitle">1. Judul Scene</Label><Input id="sceneTitle" value={sceneTitle} onChange={(e) => setSceneTitle(e.target.value)} /></div>
-                        <div className="space-y-2 md:col-span-2"><Label htmlFor="characterDescription">2. Deskripsi Karakter Inti</Label><Textarea id="characterDescription" value={characterDescription} onChange={(e) => setCharacterDescription(e.target.value)} rows={6} /></div>
-                        <div className="space-y-2 md:col-span-2"><Label htmlFor="characterVoice">3. Detail Suara Karakter</Label><Textarea id="characterVoice" value={characterVoice} onChange={(e) => setCharacterVoice(e.target.value)} rows={5} /></div>
-                        <div className="space-y-2"><Label htmlFor="characterAction">4. Aksi Karakter</Label><Textarea id="characterAction" value={characterAction} onChange={(e) => setCharacterAction(e.target.value)} /></div>
-                        <div className="space-y-2"><Label htmlFor="characterExpression">5. Ekspresi Karakter</Label><Textarea id="characterExpression" value={characterExpression} onChange={(e) => setCharacterExpression(e.target.value)} /></div>
-                        <div className="space-y-2 md:col-span-2"><Label htmlFor="settingAndTime">6. Latar Tempat & Waktu</Label><Textarea id="settingAndTime" value={settingAndTime} onChange={(e) => setSettingAndTime(e.target.value)} rows={4} /></div>
-                        
-                        <Card className="md:col-span-2 p-4 bg-white border">
-                            <h3 className="text-lg font-semibold mb-3">7. Detail Visual Tambahan</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <CardContent className="space-y-6">
+                        {/* Kategori: Detail Subjek dan Aksi */}
+                        <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                            <h3 className="text-lg font-semibold mb-4 text-purple-800">Detail Subjek dan Aksi</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2 md:col-span-2"><Label htmlFor="sceneTitle">Judul Scene</Label><Input id="sceneTitle" placeholder="terminal bus malam" value={sceneTitle} onChange={(e) => setSceneTitle(e.target.value)} /></div>
+                                <div className="space-y-2 md:col-span-2"><Label htmlFor="characterDescription">Deskripsi Karakter Inti</Label><Textarea id="characterDescription" placeholder="Seorang vlogger wanita muda asal Minang berusia 27 tahun. Perawakan/Bentuk Tubuh: tubuh mungil, tinggi 158cm..." value={characterDescription} onChange={(e) => setCharacterDescription(e.target.value)} rows={5} /></div>
+                                <div className="space-y-2"><Label htmlFor="characterAction">Aksi Karakter</Label><Textarea id="characterAction" placeholder="berjalan di sekitar terminal bus malam sambil melihat-lihat aktivitas penumpang dan pedagang." value={characterAction} onChange={(e) => setCharacterAction(e.target.value)} /></div>
+                                <div className="space-y-2"><Label htmlFor="characterExpression">Ekspresi Karakter</Label><Textarea id="characterExpression" placeholder="Karakter menunjukkan ekspresi kagum dan antusias, sering tersenyum sambil melirik kamera." value={characterExpression} onChange={(e) => setCharacterExpression(e.target.value)} /></div>
+                            </div>
+                        </div>
+
+                        {/* Kategori: Lingkungan dan Atmosfer */}
+                        <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                            <h3 className="text-lg font-semibold mb-4 text-green-800">Lingkungan dan Atmosfer</h3>
+                            <div className="grid grid-cols-1 gap-4">
+                                <div className="space-y-2"><Label htmlFor="settingAndTime">Latar Tempat & Waktu</Label><Textarea id="settingAndTime" placeholder="latar tempat: di terminal bus antar kota malam hari, terdapat pedagang kaki lima..." value={settingAndTime} onChange={(e) => setSettingAndTime(e.target.value)} rows={3} /></div>
+                                <div className="space-y-2"><Label htmlFor="atmosphere">Suasana Keseluruhan</Label><Textarea id="atmosphere" placeholder="Suasana sibuk, ramai, dengan kesan perjalanan malam yang hidup dan dinamis meskipun hujan." value={atmosphere} onChange={(e) => setAtmosphere(e.target.value)} /></div>
+                            </div>
+                        </div>
+
+                        {/* Kategori: Sinematografi */}
+                        <div className="p-4 bg-sky-50 rounded-lg border border-sky-200">
+                            <h3 className="text-lg font-semibold mb-4 text-sky-800">Sinematografi</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="space-y-2"><Label>Gerakan Kamera</Label>
                                     <Select value={cameraMovement} onValueChange={setCameraMovement}>
                                         <SelectTrigger><SelectValue /></SelectTrigger>
                                         <SelectContent>{cameraMovements.map(m => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
                                     </Select>
                                 </div>
-                                <div className="space-y-2"><Label>Pencahayaan</Label><Input value={lighting} onChange={(e) => setLighting(e.target.value)} /></div>
-                                <div className="space-y-2"><Label>Gaya Video/Art Style</Label><Input value={artStyle} onChange={(e) => setArtStyle(e.target.value)} /></div>
-                                <div className="space-y-2"><Label>Kualitas Visual</Label><Input value={visualQuality} onChange={(e) => setVisualQuality(e.target.value)} /></div>
+                                <div className="space-y-2"><Label>Pencahayaan</Label><Input placeholder="natural dari lampu jalan dan lampu bus, pantulan cahaya pada aspal basah." value={lighting} onChange={(e) => setLighting(e.target.value)} /></div>
+                                <div className="space-y-2"><Label>Gaya Video/Art Style</Label><Input placeholder="cinematic realistis" value={artStyle} onChange={(e) => setArtStyle(e.target.value)} /></div>
                             </div>
-                        </Card>
+                        </div>
 
-                        <div className="space-y-2"><Label htmlFor="atmosphere">8. Suasana Keseluruhan</Label><Textarea id="atmosphere" value={atmosphere} onChange={(e) => setAtmosphere(e.target.value)} /></div>
-                        <div className="space-y-2"><Label htmlFor="ambienceSound">9. Suara Lingkungan/Ambiance</Label><Textarea id="ambienceSound" value={ambienceSound} onChange={(e) => setAmbienceSound(e.target.value)} /></div>
-                        <div className="space-y-2 md:col-span-2"><Label htmlFor="dialogue">10. Dialog Karakter</Label><Textarea id="dialogue" value={dialogue} onChange={(e) => setDialogue(e.target.value)} rows={3} /></div>
-                        <div className="space-y-2 md:col-span-2"><Label htmlFor="negativePrompt">11. Negative Prompt</Label><Textarea id="negativePrompt" value={negativePrompt} onChange={(e) => setNegativePrompt(e.target.value)} rows={3} /></div>
+                        {/* Kategori: Audio */}
+                        <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                            <h3 className="text-lg font-semibold mb-4 text-amber-800">Audio</h3>
+                            <div className="grid grid-cols-1 gap-4">
+                                <div className="space-y-2"><Label htmlFor="characterVoice">Detail Suara Karakter</Label><Textarea id="characterVoice" placeholder="Dia berbicara dengan suara wanita muda yang hangat dan penuh semangat. Nada: mezzo-soprano..." value={characterVoice} onChange={(e) => setCharacterVoice(e.target.value)} rows={4} /></div>
+                                <div className="space-y-2"><Label htmlFor="ambienceSound">Suara Lingkungan/Ambiance</Label><Textarea id="ambienceSound" placeholder="SOUND: suara mesin bus menyala, pengumuman dari pengeras suara, derai hujan ringan..." value={ambienceSound} onChange={(e) => setAmbienceSound(e.target.value)} /></div>
+                                <div className="space-y-2"><Label htmlFor="dialogue">Dialog Karakter</Label><Textarea id="dialogue" placeholder="Karakter berkata: Tiap kota punya terminal kayak gini, dan aku suka banget suasana malamnya…" value={dialogue} onChange={(e) => setDialogue(e.target.value)} rows={3} /></div>
+                            </div>
+                        </div>
+
+                         {/* Kategori: Parameter Teknis dan Tambahan */}
+                         <div className="p-4 bg-red-50 rounded-lg border border-red-200">
+                            <h3 className="text-lg font-semibold mb-4 text-red-800">Parameter Teknis dan Tambahan</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2"><Label>Kualitas Visual</Label><Input placeholder="Resolusi 4K" value={visualQuality} onChange={(e) => setVisualQuality(e.target.value)} /></div>
+                                <div className="space-y-2 md:col-span-2"><Label htmlFor="negativePrompt">Negative Prompt</Label><Textarea id="negativePrompt" placeholder="teks di layar, subtitle, tulisan di video, font, logo, distorsi, artefak..." value={negativePrompt} onChange={(e) => setNegativePrompt(e.target.value)} rows={3} /></div>
+                            </div>
+                        </div>
                         
-                        <div className="md:col-span-2">
+                        <div>
                             <Button onClick={handleGeneratePrompt} className="w-full text-lg py-6 bg-purple-600 hover:bg-purple-700">
                                 <Wand2 className="w-5 h-5 mr-2" />
                                 Buat Prompt
@@ -162,4 +241,3 @@ const VeoPromptGenerator = () => {
 };
 
 export default VeoPromptGenerator;
-
