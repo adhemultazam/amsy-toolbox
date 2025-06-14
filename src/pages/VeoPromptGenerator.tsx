@@ -159,8 +159,8 @@ const VeoPromptGenerator = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2 md:col-span-2"><Label htmlFor="sceneTitle" className="text-sm font-medium">Judul Scene</Label><Input id="sceneTitle" placeholder="Pasar terapung di Kalimantan saat fajar" value={sceneTitle} onChange={(e) => setSceneTitle(e.target.value)} /></div>
                                     <div className="space-y-2 md:col-span-2"><Label htmlFor="characterDescription" className="text-sm font-medium">Deskripsi Karakter Inti</Label><Textarea id="characterDescription" placeholder="Seorang ibu pedagang paruh baya dengan senyum ramah, mengenakan caping dan baju batik sederhana, mendayung perahu kecil penuh dengan buah-buahan tropis." value={characterDescription} onChange={(e) => setCharacterDescription(e.target.value)} rows={5} /></div>
-                                    <div className="space-y-2"><Label htmlFor="characterAction" className="text-sm font-medium">Aksi Karakter</Label><Textarea id="characterAction" placeholder="Menawarkan dagangannya kepada pembeli di perahu lain dengan gerakan tangan yang luwes." value={characterAction} onChange={(e) => setCharacterAction(e.target.value)} /></div>
-                                    <div className="space-y-2"><Label htmlFor="characterExpression" className="text-sm font-medium">Ekspresi Karakter</Label><Textarea id="characterExpression" placeholder="Menunjukkan ekspresi tulus dan hangat, matanya berbinar saat berinteraksi." value={characterExpression} onChange={(e) => setCharacterExpression(e.target.value)} /></div>
+                                    <div className="space-y-2"><Label htmlFor="characterAction" className="text-sm font-medium">Aksi Karakter</Label><Textarea id="characterAction" placeholder="menawarkan dagangannya kepada pembeli di perahu lain" value={characterAction} onChange={(e) => setCharacterAction(e.target.value)} /></div>
+                                    <div className="space-y-2"><Label htmlFor="characterExpression" className="text-sm font-medium">Ekspresi Karakter</Label><Textarea id="characterExpression" placeholder="tulus dan hangat, matanya berbinar saat berinteraksi" value={characterExpression} onChange={(e) => setCharacterExpression(e.target.value)} /></div>
                                 </div>
                             </div>
 
@@ -168,7 +168,7 @@ const VeoPromptGenerator = () => {
                             <div className="p-3 bg-green-50 rounded-lg border border-green-200">
                                 <h3 className="text-base sm:text-lg font-semibold mb-4 text-green-800">Lingkungan dan Atmosfer</h3>
                                 <div className="grid grid-cols-1 gap-4">
-                                    <div className="space-y-2"><Label htmlFor="settingAndTime" className="text-sm font-medium">Latar Tempat & Waktu</Label><Textarea id="settingAndTime" placeholder="Di sungai yang ramai dengan perahu lain, saat matahari terbit memancarkan cahaya keemasan di atas air yang tenang." value={settingAndTime} onChange={(e) => setSettingAndTime(e.target.value)} rows={3} /></div>
+                                    <div className="space-y-2"><Label htmlFor="settingAndTime" className="text-sm font-medium">Latar Tempat & Waktu</Label><Textarea id="settingAndTime" placeholder="sungai yang ramai dengan perahu lain, saat matahari terbit memancarkan cahaya keemasan di atas air yang tenang" value={settingAndTime} onChange={(e) => setSettingAndTime(e.target.value)} rows={3} /></div>
                                     <div className="space-y-2"><Label htmlFor="atmosphere" className="text-sm font-medium">Suasana Keseluruhan</Label><Textarea id="atmosphere" placeholder="Penuh kehidupan, otentik, dan damai." value={atmosphere} onChange={(e) => setAtmosphere(e.target.value)} /></div>
                                 </div>
                             </div>
@@ -183,8 +183,8 @@ const VeoPromptGenerator = () => {
                                             <SelectContent>{cameraMovements.map(m => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
                                         </Select>
                                     </div>
-                                    <div className="space-y-2"><Label className="text-sm font-medium">Pencahayaan</Label><Input placeholder="Cahaya pagi yang lembut dan hangat, menciptakan bayangan panjang." value={lighting} onChange={(e) => setLighting(e.target.value)} /></div>
-                                    <div className="space-y-2"><Label className="text-sm font-medium">Gaya Video/Art Style</Label><Input placeholder="Gaya dokumenter sinematik, fokus pada detail dan emosi." value={artStyle} onChange={(e) => setArtStyle(e.target.value)} /></div>
+                                    <div className="space-y-2"><Label className="text-sm font-medium">Pencahayaan</Label><Input placeholder="pagi yang lembut dan hangat, menciptakan bayangan panjang" value={lighting} onChange={(e) => setLighting(e.target.value)} /></div>
+                                    <div className="space-y-2"><Label className="text-sm font-medium">Gaya Video/Art Style</Label><Input placeholder="dokumenter sinematik, dengan fokus pada detail dan emosi" value={artStyle} onChange={(e) => setArtStyle(e.target.value)} /></div>
                                 </div>
                             </div>
 
