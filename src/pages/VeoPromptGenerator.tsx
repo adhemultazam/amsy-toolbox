@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -39,12 +38,12 @@ const VeoPromptGenerator = () => {
     const [isEnhancing, setIsEnhancing] = useState(false);
 
     React.useEffect(() => {
-        const storedApiKey = localStorage.getItem('perplexity-api-key');
+        const storedApiKey = localStorage.getItem('gemini-api-key');
         if (storedApiKey) {
             setApiKey(storedApiKey);
             toast({
                 title: "API Key Loaded",
-                description: "Your Perplexity API key was loaded from local storage.",
+                description: "Your Google Gemini API key was loaded from local storage.",
             });
         }
     }, []);
@@ -53,15 +52,15 @@ const VeoPromptGenerator = () => {
         if (!apiKey) {
             toast({
                 title: "API Key is empty",
-                description: "Please enter your Perplexity API key.",
+                description: "Please enter your Google Gemini API key.",
                 variant: "destructive",
             });
             return;
         }
-        localStorage.setItem('perplexity-api-key', apiKey);
+        localStorage.setItem('gemini-api-key', apiKey);
         toast({
             title: "API Key Saved",
-            description: "Your Perplexity API key has been saved to your browser's local storage.",
+            description: "Your Google Gemini API key has been saved to your browser's local storage.",
         });
     };
 
@@ -69,7 +68,7 @@ const VeoPromptGenerator = () => {
         if (!apiKey) {
             toast({
                 title: "API Key Required",
-                description: "Please enter your Perplexity API key to use the AI enhancement feature.",
+                description: "Please enter your Google Gemini API key to use the AI enhancement feature.",
                 variant: "destructive",
             });
             return;
@@ -86,35 +85,32 @@ const VeoPromptGenerator = () => {
 
         setIsEnhancing(true);
         try {
-            const response = await fetch('https://api.perplexity.ai/chat/completions', {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
               method: 'POST',
               headers: {
-                'Authorization': `Bearer ${apiKey}`,
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                model: 'llama-3.1-sonar-small-128k-online',
-                messages: [
-                  {
-                    role: 'system',
-                    content: `You are an expert prompt engineer for Google's Veo video generation model. Your task is to enhance a user-provided text snippet for a specific part of a video prompt. The user will provide the current text and the field name. Rewrite the text to be more descriptive, evocative, and detailed, suitable for generating a high-quality, cinematic video scene. Respond only with the enhanced text, without any explanations, quotes, or introductory phrases. The field to enhance is: "${fieldName}".`
-                  },
-                  {
-                    role: 'user',
-                    content: currentText
-                  }
-                ],
+                contents: [{
+                    parts: [{
+                        text: `You are an expert prompt engineer for Google's Veo video generation model. Your task is to enhance a user-provided text snippet for a specific part of a video prompt. The user will provide the current text and the field name. Rewrite the text to be more descriptive, evocative, and detailed, suitable for generating a high-quality, cinematic video scene. Respond only with the enhanced text, without any explanations, quotes, or introductory phrases.
+
+                        The field to enhance is: "${fieldName}".
+                        
+                        The text to enhance is: "${currentText}"`
+                    }]
+                }]
               }),
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error("AI API Error:", errorData);
-                throw new Error(`API error: ${response.statusText}`);
+                throw new Error(errorData.error?.message || `API error: ${response.statusText}`);
             }
 
             const data = await response.json();
-            const enhancedText = data.choices[0].message.content;
+            const enhancedText = data.candidates[0].content.parts[0].text;
             setText(enhancedText.trim());
 
             toast({
@@ -228,20 +224,20 @@ const VeoPromptGenerator = () => {
                                 <div className="flex items-center space-x-3">
                                     <KeyRound className="w-8 h-8 text-blue-600" />
                                     <div>
-                                        <CardTitle className="text-xl font-bold text-gray-800">AI Enhancement (Perplexity)</CardTitle>
+                                        <CardTitle className="text-xl font-bold text-gray-800">AI Enhancement (Google Gemini)</CardTitle>
                                         <CardDescription className="text-sm text-gray-500">
-                                            Enter your Perplexity API key to enable AI-powered prompt improvements. Your key is saved only in your browser.
+                                            Enter your Google Gemini API key to enable AI-powered prompt improvements. Your key is saved only in your browser.
                                         </CardDescription>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <Label htmlFor="apiKey" className="text-sm font-medium">Perplexity API Key</Label>
+                                <Label htmlFor="apiKey" className="text-sm font-medium">Google Gemini API Key</Label>
                                 <div className="flex items-center space-x-2 mt-2">
                                     <Input 
                                         id="apiKey"
                                         type="password"
-                                        placeholder="Enter your Perplexity API key" 
+                                        placeholder="Enter your Google Gemini API key" 
                                         value={apiKey} 
                                         onChange={(e) => setApiKey(e.target.value)} 
                                         className="placeholder:text-sm"
@@ -250,8 +246,8 @@ const VeoPromptGenerator = () => {
                                 </div>
                                 <p className="text-xs text-gray-500 mt-2">
                                     Don't have a key? Get one from{" "}
-                                    <a href="https://www.perplexity.ai/settings/api" target="_blank" rel="noopener noreferrer" className="underline text-blue-600 hover:text-blue-800">
-                                        Perplexity AI settings
+                                    <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="underline text-blue-600 hover:text-blue-800">
+                                        Google AI Studio
                                     </a>.
                                 </p>
                             </CardContent>
