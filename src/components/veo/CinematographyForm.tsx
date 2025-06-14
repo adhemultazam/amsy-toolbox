@@ -32,8 +32,8 @@ const CinematographyForm: React.FC<CinematographyFormProps> = ({
                         <SelectContent>{cameraMovements.map(m => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}</SelectContent>
                     </Select>
                 </div>
-                <div className="space-y-2"><Label className="text-sm font-medium">Pencahayaan</Label><Input placeholder="senja yang dramatis, menyoroti siluet" value={lighting} onChange={(e) => setLighting(e.target.value)} className="placeholder:text-sm" maxLength={500} /></div>
-                <div className="space-y-2"><Label className="text-sm font-medium">Gaya Video/Art Style</Label><Input placeholder="sinematik ala film indie" value={artStyle} onChange={(e) => setArtStyle(e.target.value)} className="placeholder:text-sm" maxLength={200} /></div>
+                <div className="space-y-2"><Label className="text-sm font-medium">Pencahayaan</Label><Input placeholder="senja yang dramatis, menyoroti siluet" value={lighting} onChange={(e) => setLighting(e.target.value)} className="placeholder:text-sm" /></div>
+                <div className="space-y-2"><Label className="text-sm font-medium">Gaya Video/Art Style</Label><Input placeholder="sinematik ala film indie" value={artStyle} onChange={(e) => setArtStyle(e.target.value)} className="placeholder:text-sm" /></div>
             </div>
         </div>
     );

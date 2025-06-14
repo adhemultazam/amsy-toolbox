@@ -12,24 +12,9 @@ interface AudioUploadProps {
 }
 
 const AudioUpload = ({ file, duration, onFileSelect, onRemoveFile, formatTime }: AudioUploadProps) => {
-  const MAX_FILE_SIZE_MB = 100;
-  const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
-  
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      if (selectedFile.size > MAX_FILE_SIZE_BYTES) {
-        alert(`Ukuran file tidak boleh melebihi ${MAX_FILE_SIZE_MB} MB.`);
-        e.target.value = ''; // Reset input
-        return;
-      }
-      
-      if (!selectedFile.type.startsWith("audio/")) {
-        alert("Hanya file audio yang diizinkan.");
-        e.target.value = ''; // Reset input
-        return;
-      }
-
       onFileSelect(selectedFile);
     }
   };
