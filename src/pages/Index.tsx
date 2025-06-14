@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ImageIcon, AudioLinesIcon, TypeIcon, CalendarIcon, FileTextIcon, BarChartIcon, FileIcon } from "lucide-react";
+import { ImageIcon, AudioLinesIcon, TypeIcon, CalendarIcon, FileTextIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Index = () => {
@@ -31,13 +31,13 @@ const Index = () => {
       path: "/text-converter"
     },
     {
-      id: "pdf-tools",
-      title: "Coming Soon",
-      description: "Segera Hadir",
-      icon: CalendarIcon,
+      id: "veo-prompt-generator",
+      title: "Veo 3 Prompt Generator",
+      description: "Buat prompt konsisten untuk Google Veo 3 dengan struktur yang tepat.",
+      icon: FileTextIcon,
       gradient: "from-red-500 to-pink-600",
-      path: "#",
-      comingSoon: true
+      path: "/veo-prompt-generator",
+      comingSoon: false,
     },
     {
       id: "calendar-maker",

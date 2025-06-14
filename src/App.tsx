@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import ImageConverter from "./pages/ImageConverter";
 import Mp3Cutter from "./pages/Mp3Cutter";
 import TextConverter from "./pages/TextConverter";
+import VeoPromptGenerator from "./pages/VeoPromptGenerator";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/image-converter" element={<ImageConverter />} />
           <Route path="/mp3-cutter" element={<Mp3Cutter />} />
           <Route path="/text-converter" element={<TextConverter />} />
+          <Route path="/veo-prompt-generator" element={<VeoPromptGenerator />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
