@@ -12,6 +12,7 @@ import CinematographyForm from '@/components/veo/CinematographyForm';
 import AudioForm from '@/components/veo/AudioForm';
 import TechnicalParamsForm from '@/components/veo/TechnicalParamsForm';
 import PromptResults from '@/components/veo/PromptResults';
+import Footer from '@/components/Footer';
 
 const VeoPromptGenerator = () => {
     const [sceneTitle, setSceneTitle] = useState('');
@@ -178,6 +179,7 @@ const VeoPromptGenerator = () => {
                         />
                     )}
                 </div>
+                <Footer />
             </div>
         </div>
     );
